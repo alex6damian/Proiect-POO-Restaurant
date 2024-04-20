@@ -1,1 +1,1 @@
-# Proiect 2.0
+# Proiect 2 POO (Simulare Restaurant)
