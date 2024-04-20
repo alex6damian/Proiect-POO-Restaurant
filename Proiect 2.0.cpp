@@ -12,6 +12,8 @@
 
 using namespace std;
 
+// comentariu
+
 int main()
 {
 	vector<Produs*> produse;
