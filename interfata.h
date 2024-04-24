@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include "angajati.h"
 
 using namespace std;
 

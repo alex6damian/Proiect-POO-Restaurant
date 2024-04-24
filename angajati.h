@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class Angajati: protected Interfata{
+class Angajati{
 
 protected: // definirea atributelor clasei
     string nume;

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class Produs : public Interfata {
+class Produs : protected Interfata {
 
 protected: // definirea atributelor clasei
 	float pret;
@@ -21,6 +21,12 @@ public: // definirea metodelor clasei
 
 	// constructor cu parametri
 	Produs(float pret, double cantitate, string valabilitate, string nume);
+
+	// copy-constructor
+	Produs(const Produs& obj);
+
+	// operator =
+	Produs& operator=(const Produs& obj);
 
 	// setter pentru pret
 	void setPret(float pret);
@@ -45,12 +51,6 @@ public: // definirea metodelor clasei
 
 	// getter pentru nume
 	string getNume() const;
-
-	// copy-constructor
-	Produs(const Produs& obj);
-
-	// operator =
-	Produs& operator=(const Produs& obj);
 
 	// citire
 	istream& citire(istream& in) override{
@@ -84,9 +84,7 @@ public: // definirea metodelor clasei
 	}
 	
 	// aplicam discount
-	virtual void discount(string discount) {
-		cout << "a";
-	}
+	virtual void discount(string discount) = 0;
 
 	// destructor
 	virtual ~Produs() {};

@@ -20,6 +20,12 @@ public: // definirea metodelor clasei
 	// constructor cu parametri
 	ProdusVita(float pret, double cantitate, string valabilitate, string nume, vector<int> sosuri);
 
+	// copy-constructor
+	ProdusVita(const ProdusVita& obj);
+
+	// operator =
+	ProdusVita& operator=(const ProdusVita& obj);
+
 	// getter tipCarne
 	string getTipCarne() const;
 
@@ -28,12 +34,6 @@ public: // definirea metodelor clasei
 
 	// getter sosuri
 	vector<int> getsosuri() const;
-
-	// copy-constructor
-	ProdusVita(const ProdusVita& obj);
-
-	// operator =
-	ProdusVita& operator=(const ProdusVita& obj);
 
 	// citire
 	istream& citire(istream& in) override{
@@ -91,7 +91,6 @@ public: // definirea metodelor clasei
 		else
 			cout << "\n Codul introdus este invalid!\n";
 	}
-
 
 	// destructor
 	~ProdusVita() {};

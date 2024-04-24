@@ -28,7 +28,10 @@ public: // definirea metodelor clasei
     Restaurant();
 
     // constructor cu parametri
-    Restaurant(string nume, string adresa, string telefon, vector<Angajati> angajati);
+    Restaurant(string nume, string adresa, string telefon, vector<Angajati> angajati, vector<Produs*> comenzi);
+
+    // copy constructor
+    Restaurant(const Restaurant& obj);
 
     // setter pentru nume
     void setNume(string nume);
@@ -60,9 +63,6 @@ public: // definirea metodelor clasei
     // getter pentru comenzi
     vector<Produs*> getComenzi() const;
 
-    // copy-constructor
-    Restaurant(const Restaurant& obj);
-
     // operator =
     Restaurant& operator=(const Restaurant& obj);
 
@@ -71,6 +71,11 @@ public: // definirea metodelor clasei
 
     // eliminare comanda
     void eliminareComanda(int index);
+    
+    // angajatul cu cel mai mare salariu
+    Angajati angajatulLunii(const vector<Angajati>& angajati) const {
+        return angajati[0];
+    }
 
     // informatii comanda(operator [])
     Produs* operator[](int index) const;
@@ -85,7 +90,7 @@ public: // definirea metodelor clasei
     Restaurant operator+(const Angajati& obj) const;
 
     // citire
-    istream& citire(istream& in) {
+    istream& citire(istream& in) override {
 
         in.get();
         cout << "\n Nume restaurant: ";
@@ -139,7 +144,7 @@ public: // definirea metodelor clasei
     }
 
     // afisare
-    ostream& afisare(ostream& out) const {
+    ostream& afisare(ostream& out) const override{
 
         out << "\n\n Nume restaurant: " << nume;
 
@@ -147,7 +152,7 @@ public: // definirea metodelor clasei
 
         out << "\n Telefon restaurant: " << telefon;
 
-        out << "\n Numar angajati: " << angajati.size();
+        out << "\n Numar angajati: " << angajati.size()<<'\n';
         
         for (int i = 0; i < angajati.size(); i++) {
 			out << "\n Angajatul " << i + 1 << ":";
@@ -177,8 +182,108 @@ Restaurant::Restaurant() : nume("Necunoscut"), adresa("Necunoscuta"), telefon("N
 angajati(), comenzi() {}
 
 // constructor cu parametri
-Restaurant::Restaurant(string nume, string adresa, string telefon, vector<Angajati> angajati): 
-nume(nume), adresa(adresa), telefon(telefon), angajati(angajati), comenzi(comenzi){}
+Restaurant::Restaurant(string nume, string adresa, string telefon, vector<Angajati> angajati, vector<Produs*> comenzi):
+nume(nume), adresa(adresa), telefon(telefon), angajati(angajati){
+    
+    for (int i = 0;i < this->comenzi.size();i++)
+        delete this->comenzi[i];
+
+    this->comenzi.clear();
+
+    for (int i = 0;i < comenzi.size();i++)
+        if (typeid(ProdusPui) == typeid(*comenzi[i])) {
+            Produs *p = new ProdusPui(dynamic_cast<ProdusPui&>(*comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+        else if (typeid(ProdusVita) == typeid(*comenzi[i])) {
+            Produs *p = new ProdusVita(dynamic_cast<ProdusVita&>(*comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+        else if (typeid(ProdusAmestec) == typeid(*comenzi[i])) {
+            Produs *p = new ProdusAmestec(dynamic_cast<ProdusAmestec&>(*comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+}
+
+// copy constructor
+Restaurant::Restaurant(const Restaurant& obj) : nume(obj.nume), adresa(obj.adresa), telefon(obj.telefon), angajati(obj.angajati) {
+   
+    for (int i = 0;i < this->comenzi.size();i++)
+        delete this->comenzi[i];
+
+    this->comenzi.clear();
+
+    for (int i = 0;i < obj.comenzi.size();i++)
+        if (typeid(ProdusPui) == typeid(*obj.comenzi[i])) {
+            Produs* p = new ProdusPui(dynamic_cast<ProdusPui&>(*obj.comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+        else if (typeid(ProdusVita) == typeid(*obj.comenzi[i])) {
+            Produs* p = new ProdusVita(dynamic_cast<ProdusVita&>(*obj.comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+        else if (typeid(ProdusAmestec) == typeid(*obj.comenzi[i])) {
+            Produs* p = new ProdusAmestec(dynamic_cast<ProdusAmestec&>(*obj.comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+}
+
+// operator =
+Restaurant& Restaurant::operator=(const Restaurant& obj) {
+
+    if (this != &obj) {
+
+        this->nume = obj.nume;
+
+        this->adresa = obj.adresa;
+
+        this->telefon = obj.telefon;
+
+        this->angajati = obj.angajati;
+
+        for (int i = 0;i < this->comenzi.size();i++)
+            delete this->comenzi[i];
+
+        this->comenzi.clear();
+
+        for (int i = 0;i < obj.comenzi.size();i++)
+            if (typeid(ProdusPui) == typeid(*obj.comenzi[i])) {
+                Produs* p = new ProdusPui(dynamic_cast<ProdusPui&>(*obj.comenzi[i]));
+                this->comenzi.push_back(p);
+            }
+            else if (typeid(ProdusVita) == typeid(*obj.comenzi[i])) {
+                Produs* p = new ProdusVita(dynamic_cast<ProdusVita&>(*obj.comenzi[i]));
+                this->comenzi.push_back(p);
+            }
+            else if (typeid(ProdusAmestec) == typeid(*obj.comenzi[i])) {
+                Produs* p = new ProdusAmestec(dynamic_cast<ProdusAmestec&>(*obj.comenzi[i]));
+                this->comenzi.push_back(p);
+            }
+        
+    }
+    return *this;
+}
+
+// operator + intre clase
+Restaurant Restaurant::operator+(const Produs& obj) {
+
+    Restaurant copy = *this;
+    if (const ProdusAmestec* amestecPointer = dynamic_cast<const ProdusAmestec*>(&obj)) {
+        Produs* p = new ProdusAmestec(*amestecPointer);
+        copy.comenzi.push_back(p);
+    }
+    else if (const ProdusPui* puiPointer = dynamic_cast<const ProdusPui*>(&obj)) {
+        Produs* p = new ProdusPui(*puiPointer);
+        copy.comenzi.push_back(p);
+    }
+    else if (const ProdusVita* vitaPointer = dynamic_cast<const ProdusVita*>(&obj)) {
+        Produs* p = new ProdusVita(*vitaPointer);
+        copy.comenzi.push_back(p);
+    }
+
+
+    return copy;
+}
 
 // setter nume
 void Restaurant::setNume(string nume) {
@@ -222,7 +327,26 @@ vector<Angajati> Restaurant::getAngajati() const{
 
 // setter comenzi
 void Restaurant::setComenzi(const vector<Produs*> comenzi) {
-	this->comenzi = comenzi;
+    
+    for (int i = 0;i < this->comenzi.size();i++)
+        delete this->comenzi[i];
+
+    this->comenzi.clear();
+
+    for (int i = 0;i < comenzi.size();i++)
+        if (typeid(ProdusPui) == typeid(*comenzi[i])) {
+            Produs* p = new ProdusPui(dynamic_cast<ProdusPui&>(*comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+        else if (typeid(ProdusVita) == typeid(*comenzi[i])) {
+            Produs* p = new ProdusVita(dynamic_cast<ProdusVita&>(*comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+        else if (typeid(ProdusAmestec) == typeid(*comenzi[i])) {
+            Produs* p = new ProdusAmestec(dynamic_cast<ProdusAmestec&>(*comenzi[i]));
+            this->comenzi.push_back(p);
+        }
+
 }
 
 // getter comenzi
@@ -230,52 +354,15 @@ vector<Produs*> Restaurant::getComenzi() const {
 	return this->comenzi;
 }
 
-// copy-constructor
-Restaurant::Restaurant(const Restaurant& obj) : nume(obj.nume), adresa(obj.adresa), 
-telefon(obj.telefon), angajati(obj.angajati), comenzi(obj.comenzi) {}
-
-// operator =
-Restaurant& Restaurant::operator=(const Restaurant& obj) {
-    
-    if (this != &obj) {
-    
-        this->nume = obj.nume;
-        this->adresa = obj.adresa;
-        this->telefon = obj.telefon;
-        this->angajati = obj.angajati;
-        this->comenzi = obj.comenzi;
-    }
-    return *this;
-}
-
-// operator + intre clase
-Restaurant Restaurant::operator+(const Produs& obj) {
-
-    Restaurant copy = *this;
-    Produs* p;
-
-    if (typeid(ProdusPui)==typeid(obj)) {
-        p = new ProdusPui;
-        *p = obj;
-    }
-    else if (typeid(ProdusVita) == typeid(obj)) {
-        p = new ProdusVita;
-        *p = obj;
-    }
-    else if (typeid(ProdusAmestec) == typeid(obj)) {
-        p = new ProdusAmestec;
-        *p = obj;
-    }
-    copy.comenzi.push_back(p);
-	
-    return copy;
-}
-
 // eliminare comanda
 void Restaurant::eliminareComanda(int index) {
     try {
-        if (index >= 0 && index < comenzi.size())
-            comenzi.erase(comenzi.begin() + index);
+        if (index >= 0 && index < this->comenzi.size())
+        {
+            delete this->comenzi[index];
+            this->comenzi.erase(this->comenzi.begin() + index);
+            
+        }
         else
             throw out_of_range(" Index invalid! \n");
     }
@@ -344,6 +431,10 @@ ostream& operator<<(ostream& out, const Restaurant& obj) {
 
 // destructor
 Restaurant:: ~Restaurant() {
+
+    for(int i=0;i<this->comenzi.size();i++)
+        delete this->comenzi[i];
+
     this->angajati.clear();
     this->comenzi.clear();
 }

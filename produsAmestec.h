@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class ProdusAmestec :   public ProdusPui,  public ProdusVita
+class ProdusAmestec : public ProdusPui,  public ProdusVita
 {
 protected: // definirea atributelor clasei
 	string bautura;
@@ -144,7 +144,7 @@ ProdusAmestec::ProdusAmestec(float pret, double cantitate, string valabilitate, 
 
 // copy constructor
 ProdusAmestec::ProdusAmestec(const ProdusAmestec& obj) :
-	ProdusPui(obj), ProdusVita(obj), bautura(obj.bautura), ingredienteSos(obj.ingredienteSos){
+	Produs(obj), ProdusPui(obj), ProdusVita(obj), bautura(obj.bautura), ingredienteSos(obj.ingredienteSos){
 	this->Produs::tipCarne= "Amestec";
 }
 
