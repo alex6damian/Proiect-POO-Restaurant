@@ -12,8 +12,6 @@
 
 using namespace std;
 
-// comentariu
-
 int main()
 {
 	vector<Produs*> produse;
@@ -22,6 +20,7 @@ int main()
 	ProdusAmestec pa(100, 850, "2", "Kebab", ingrediente, sosuri, "Cola");
 	ProdusPui p1(50, 500, "3", "Pui cu cartofi", ingrediente);
 	ProdusVita p2(70, 700, "4", "Vita cu sos", sosuri);
+
 	Restaurant r;
 	r = r + pa + p1 + p2;
 	Angajati a, a1, a2;
